@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" role="img" aria-label="REX KENNY monogram">
+  <rect width="512" height="512" rx="96" fill="#090909"/>
+  <rect x="18" y="18" width="476" height="476" rx="82" fill="none" stroke="#D4A52C" stroke-width="10"/>
+  <g fill="#D4A52C">
+    <path d="M132 140h96c52 0 84 28 84 72 0 32-18 54-46 63l58 137h-56l-52-126h-34v126h-50V140zm50 44v66h40c24 0 38-13 38-33s-14-33-38-33h-40z"/>
+    <path d="M300 140h52l58 78 60-78h22l-72 92 78 128h-24l-66-110-38 42v68h-50V258l-34-40h38l46 52 34-44-52-68h-52z"/>
+  </g>
+</svg>

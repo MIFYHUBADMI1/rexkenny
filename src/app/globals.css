@@ -1,0 +1,369 @@
+@import "tailwindcss";
+
+@theme {
+  --color-ink: #090909;
+  --color-ink-soft: #101012;
+  --color-ink-raised: #17171a;
+  --color-charcoal: #1f1f23;
+  --color-ash: #2a2a2f;
+  --color-smoke: #8a8a93;
+  --color-mist: #c9c9d1;
+  --color-paper: #ffffff;
+
+  --color-gold: #d4a52c;
+  --color-gold-bright: #f0c75a;
+  --color-gold-deep: #9c7615;
+  --color-blood: #a71919;
+  --color-blood-bright: #d02626;
+
+  --font-display: var(--font-display), "Georgia", serif;
+  --font-sans: var(--font-sans), "Inter", system-ui, sans-serif;
+
+  --shadow-glow: 0 0 0 1px rgba(212, 165, 44, 0.35), 0 12px 40px -12px rgba(212, 165, 44, 0.25);
+}
+
+@layer base {
+  html {
+    scroll-behavior: smooth;
+    -webkit-text-size-adjust: 100%;
+  }
+
+  /* Respect the OS-level preference; the brief requires reduced-motion support. */
+  @media (prefers-reduced-motion: reduce) {
+    html {
+      scroll-behavior: auto;
+    }
+    *,
+    *::before,
+    *::after {
+      animation-duration: 0.01ms !important;
+      animation-iteration-count: 1 !important;
+      transition-duration: 0.01ms !important;
+    }
+  }
+
+  body {
+    background-color: var(--color-ink);
+    color: var(--color-paper);
+    font-family: var(--font-sans);
+    /* Prevent layout shift from the sticky player reserving space. */
+    text-rendering: optimizeLegibility;
+  }
+
+  :focus-visible {
+    outline: 2px solid var(--color-gold);
+    outline-offset: 3px;
+    border-radius: 2px;
+  }
+
+  h1,
+  h2,
+  h3,
+  h4 {
+    font-family: var(--font-display);
+    letter-spacing: -0.015em;
+    text-wrap: balance;
+  }
+
+  p {
+    text-wrap: pretty;
+  }
+
+  /* Skip link for keyboard users. */
+  .skip-link {
+    position: absolute;
+    left: -9999px;
+    top: 0;
+    z-index: 100;
+    padding: 0.75rem 1.25rem;
+    background: var(--color-gold);
+    color: var(--color-ink);
+    font-weight: 700;
+  }
+  .skip-link:focus {
+    left: 1rem;
+    top: 1rem;
+  }
+}
+
+@layer components {
+  .container-page {
+    width: 100%;
+    max-width: 84rem;
+    margin-inline: auto;
+    padding-inline: 1.25rem;
+  }
+  @media (min-width: 768px) {
+    .container-page {
+      padding-inline: 2rem;
+    }
+  }
+
+  .gold-rule {
+    background: linear-gradient(
+      90deg,
+      transparent,
+      var(--color-gold-deep) 15%,
+      var(--color-gold) 50%,
+      var(--color-gold-deep) 85%,
+      transparent
+    );
+  }
+
+  .btn-gold {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    background-color: var(--color-gold);
+    color: var(--color-ink);
+    font-weight: 700;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    font-size: 0.8125rem;
+    padding: 0.875rem 1.75rem;
+    border-radius: 9999px;
+    transition:
+      background-color 180ms ease,
+      transform 180ms ease;
+  }
+  .btn-gold:hover {
+    background-color: var(--color-gold-bright);
+  }
+  .btn-gold:active {
+    transform: translateY(1px);
+  }
+
+  .btn-ghost {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    border: 1px solid var(--color-ash);
+    color: var(--color-paper);
+    font-weight: 600;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    font-size: 0.8125rem;
+    padding: 0.875rem 1.75rem;
+    border-radius: 9999px;
+    transition:
+      border-color 180ms ease,
+      color 180ms ease;
+  }
+  .btn-ghost:hover {
+    border-color: var(--color-gold);
+    color: var(--color-gold);
+  }
+
+  .eyebrow {
+    font-size: 0.6875rem;
+    letter-spacing: 0.22em;
+    text-transform: uppercase;
+    color: var(--color-gold);
+    font-weight: 700;
+  }
+}
+
+/* ============================================================
+   Motion
+   CSS keyframes and transitions only — no animation library in the
+   client bundle, so the payload budget the SEO audit enforces is not
+   spent on a runtime. Three rules hold throughout:
+   · nothing is hidden by default; content is visible with JS disabled,
+     and reveal classes are only ever added by script after mount;
+   · everything here collapses under the prefers-reduced-motion block
+     above, which caps durations instead of removing states, so the
+     end state is always the visible one;
+   · animations decorate; they never carry meaning the text does not.
+   ============================================================ */
+@keyframes rk-rise {
+  from {
+    opacity: 0;
+    transform: translate3d(0, var(--rk-y, 18px), 0);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+@keyframes rk-fade {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes rk-rule {
+  from {
+    transform: scaleX(0);
+  }
+  to {
+    transform: scaleX(1);
+  }
+}
+
+@keyframes rk-marquee {
+  from {
+    transform: translate3d(0, 0, 0);
+  }
+  to {
+    transform: translate3d(-50%, 0, 0);
+  }
+}
+
+/* The "now playing" bars: a visual echo of audio that is actually playing. */
+@keyframes rk-bar {
+  0%,
+  100% {
+    transform: scaleY(0.3);
+  }
+  50% {
+    transform: scaleY(1);
+  }
+}
+
+/* Gold sheen that sweeps across a primary button on hover. */
+@keyframes rk-sheen {
+  from {
+    transform: translate3d(-120%, 0, 0) skewX(-18deg);
+  }
+  to {
+    transform: translate3d(320%, 0, 0) skewX(-18deg);
+  }
+}
+
+/* Ken Burns drift for the hero photograph. */
+@keyframes rk-kenburns {
+  from {
+    transform: scale(1.005) translate3d(0, 0, 0);
+  }
+  to {
+    transform: scale(1.09) translate3d(-1.2%, -1%, 0);
+  }
+}
+
+.rk-kenburns {
+  animation: rk-kenburns 28s ease-in-out infinite alternate;
+}
+
+.rk-enter {
+  animation: rk-rise 720ms cubic-bezier(0.22, 0.61, 0.36, 1) both;
+  animation-delay: var(--rk-delay, 0ms);
+}
+
+/* Client-side navigation swaps content without a document load, so the new
+   page fades in from the swap rather than appearing mid-breath. */
+.rk-page {
+  animation: rk-fade 380ms ease both;
+}
+
+/* Scroll reveals. .rk-hidden is only ever added by script, so the server
+   HTML is complete and readable on its own. */
+.rk-hidden {
+  opacity: 0;
+  transform: translate3d(0, var(--rk-y, 18px), 0);
+}
+.rk-shown {
+  opacity: 1;
+  transform: none;
+  transition:
+    opacity 640ms cubic-bezier(0.22, 0.61, 0.36, 1) var(--rk-delay, 0ms),
+    transform 640ms cubic-bezier(0.22, 0.61, 0.36, 1) var(--rk-delay, 0ms);
+}
+
+.rk-rule {
+  transform-origin: left center;
+  animation: rk-rule 900ms cubic-bezier(0.22, 0.61, 0.36, 1) both;
+  animation-delay: var(--rk-delay, 0ms);
+}
+
+/* Every page opens with the same short sweep under the heading, so a
+   navigation feels like arriving somewhere rather than being pasted. */
+.rk-head-rule {
+  margin-block: 1rem 1.25rem;
+  height: 1px;
+  max-width: 9rem;
+}
+
+.rk-marquee {
+  display: flex;
+  width: max-content;
+  animation: rk-marquee 34s linear infinite;
+}
+.rk-marquee:hover {
+  animation-play-state: paused;
+}
+
+.rk-bars {
+  display: inline-flex;
+  align-items: flex-end;
+  gap: 2px;
+  height: 12px;
+}
+.rk-bars > i {
+  display: block;
+  width: 2px;
+  height: 100%;
+  background-color: var(--color-gold);
+  transform-origin: bottom center;
+  animation: rk-bar 900ms ease-in-out infinite;
+  animation-delay: calc(var(--rk-i, 0) * 130ms);
+}
+
+/* Cards lift, artwork breathes, the underline grows. All hover-only, so a
+   touch user gets the same layout with no movement at all. */
+.rk-lift {
+  transition:
+    transform 320ms cubic-bezier(0.22, 0.61, 0.36, 1),
+    border-color 320ms ease,
+    box-shadow 320ms ease;
+}
+.rk-lift:hover {
+  transform: translate3d(0, -4px, 0);
+  border-color: color-mix(in srgb, var(--color-gold) 45%, var(--color-ash));
+  box-shadow: 0 18px 40px -22px rgba(212, 165, 44, 0.45);
+}
+
+/* States what a video thumbnail box is, so check:assets can compare the
+   declared ratio with the file's real pixels instead of trusting prose. */
+.rk-video {
+  width: 100%;
+  height: 100%;
+  aspect-ratio: 16 / 9;
+}
+
+.rk-zoom {
+  overflow: hidden;
+}
+.rk-zoom > img {
+  transition: transform 600ms cubic-bezier(0.22, 0.61, 0.36, 1);
+}
+.rk-zoom:hover > img {
+  transform: scale(1.045);
+}
+
+.btn-gold {
+  position: relative;
+  overflow: hidden;
+}
+.btn-gold::after {
+  content: "";
+  position: absolute;
+  inset: 0 auto 0 0;
+  width: 35%;
+  background: linear-gradient(
+    90deg,
+    transparent,
+    rgba(255, 255, 255, 0.55),
+    transparent
+  );
+  opacity: 0;
+}
+.btn-gold:hover::after {
+  opacity: 1;
+  animation: rk-sheen 700ms ease;
+}

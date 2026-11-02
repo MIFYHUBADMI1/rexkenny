@@ -1,0 +1,22 @@
+node_modules
+.next
+out
+.env
+.env.local
+.env*.local
+*.tsbuildinfo
+next-env.d.ts
+.DS_Store
+vercel.json
+coverage
+test-results
+playwright-report
+
+# The operator's working asset drop (92 MB of originals, drafts and notes from
+# other projects). Nothing in the site references it, it must not be published
+# to a public repository, and robots.txt keeps crawlers out of it too.
+public/images/issues/
+
+# Loose camera/WhatsApp files at the repository root: press material, not site
+# source. They stay on disk but do not belong in the published repository.
+/*.jpg
