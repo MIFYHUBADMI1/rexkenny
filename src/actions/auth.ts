@@ -1,6 +1,6 @@
 "use server";
 
-import { cookies } from "next/headers";
+import { cookies, headers } from "next/headers";
 import { redirect } from "next/navigation";
 import { z } from "zod";
 import { createSupabaseServerClient } from "@/lib/supabase/server";
@@ -41,6 +41,19 @@ function offline(): AuthState {
 async function markWelcome(kind: "back" | "joined") {
   const store = await cookies();
   store.set("rk_welcome", kind, { path: "/", maxAge: 60, sameSite: "lax" });
+}
+
+/**
+ * The origin the visitor is actually on. OAuth and email links must return to
+ * THIS host: the PKCE verifier cookie is host-scoped, so redirecting to a
+ * different configured domain makes the code exchange fail with
+ * pkce_code_verifier_not_found.
+ */
+async function requestOrigin(): Promise<string> {
+  const h = await headers();
+  const host = h.get("x-forwarded-host") ?? h.get("host") ?? new URL(SITE.url).host;
+  const proto = h.get("x-forwarded-proto") ?? "https";
+  return `${proto}://${host}`.replace(/\/$/, "");
 }
 
 export async function signInAction(
@@ -118,7 +131,7 @@ export async function signUpAction(
     email: parsed.data.email,
     password: parsed.data.password,
     options: {
-      emailRedirectTo: `${SITE.url}/auth/callback`,
+      emailRedirectTo: `${await requestOrigin()}/auth/callback`,
       data: { display_name: parsed.data.displayName },
     },
   });
@@ -145,7 +158,7 @@ export async function signInWithGoogleAction(
   const sb = await createSupabaseServerClient();
   if (!sb) return offline();
 
-  const redirectTo = `${SITE.url}/auth/callback?next=${encodeURIComponent(
+  const redirectTo = `${await requestOrigin()}/auth/callback?next=${encodeURIComponent(
     safeNext(formData.get("next")),
   )}`;
 
