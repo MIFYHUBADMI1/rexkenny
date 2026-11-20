@@ -1,3 +1,4 @@
+import { cookies } from "next/headers";
 import { NextResponse, type NextRequest } from "next/server";
 import { createSupabaseServerClient } from "@/lib/supabase/server";
 
@@ -30,7 +31,13 @@ export async function GET(request: NextRequest) {
 
   const { error } = await sb.auth.exchangeCodeForSession(code);
   if (error) {
-    return NextResponse.redirect(`${origin}/auth/error?reason=exchange-failed`);
+    // TEMP DEBUG: which auth cookies arrived? Names only, never values.
+    const names = (await cookies()).getAll().map((c) => c.name).join(",");
+    console.error("[auth/callback] exchange failed:", error.message, "| cookies:", names);
+    const detail = `${error.message} | cookies: ${names || "none"}`.slice(0, 300);
+    return NextResponse.redirect(
+      `${origin}/auth/error?reason=exchange-failed&detail=${encodeURIComponent(detail)}`,
+    );
   }
 
   const response = NextResponse.redirect(`${origin}${next}`);

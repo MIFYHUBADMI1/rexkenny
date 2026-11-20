@@ -32,10 +32,11 @@ const MESSAGES: Record<string, string> = {
 export default async function AuthErrorPage({
   searchParams,
 }: {
-  searchParams: Promise<{ reason?: string | string[] }>;
+  searchParams: Promise<{ reason?: string | string[]; detail?: string | string[] }>;
 }) {
-  const { reason } = await searchParams;
+  const { reason, detail } = await searchParams;
   const key = typeof reason === "string" ? reason : "";
+  const detailText = typeof detail === "string" ? detail.slice(0, 300) : "";
   const message =
     MESSAGES[key] ?? "Something went wrong while signing in. Please try again.";
 
@@ -46,6 +47,11 @@ export default async function AuthErrorPage({
         Not signed in
       </h1>
       <p className="mt-5 text-sm leading-relaxed text-mist">{message}</p>
+      {detailText && (
+        <p className="mt-3 break-all rounded border border-charcoal bg-ink-raised px-3 py-2 font-mono text-xs text-smoke">
+          {detailText}
+        </p>
+      )}
 
       <div className="mt-8 flex flex-wrap gap-3">
         <Link href="/auth/login" className="btn-gold">
