@@ -33,3 +33,17 @@ alter default privileges for role postgres in schema public
   grant all on functions to postgres;
 alter default privileges for role postgres in schema public
   grant all on sequences to postgres;
+
+-- 0009 creates policies on storage.objects, which live outside the public
+-- schema and survive the drop above. Remove any leftovers from earlier runs.
+do $$
+declare
+  pol record;
+begin
+  for pol in
+    select policyname from pg_policies
+    where schemaname = 'storage' and tablename = 'objects'
+  loop
+    execute format('drop policy if exists %I on storage.objects', pol.policyname);
+  end loop;
+end $$;

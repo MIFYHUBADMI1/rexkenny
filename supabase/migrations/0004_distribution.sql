@@ -241,10 +241,10 @@ create policy "submissions: editors create prepared rows"
 create policy "submissions: editors update without verifying"
   on public.distribution_submissions for update
   to authenticated
-  using (public.can_edit_content())
+  using (public.can_edit_content() and api_verified = false)
   with check (
     public.can_edit_content()
-    and api_verified = old.api_verified
+    and api_verified = false
   );
 
 create policy "submissions: admins delete"

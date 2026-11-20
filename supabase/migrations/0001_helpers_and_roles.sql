@@ -185,12 +185,14 @@ create or replace function public.record_audit(
   detail jsonb default '{}'::jsonb
 )
 returns void
-language sql
+language plpgsql
 security definer
 set search_path = public, pg_temp
 as $$
+begin
   insert into public.audit_logs (actor_user_id, action, entity, entity_id, detail)
   values (actor, action, entity, entity_id, coalesce(detail, '{}'::jsonb));
+end;
 $$;
 
 -- ---------------------------------------------------------------------------

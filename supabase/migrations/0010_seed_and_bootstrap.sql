@@ -185,7 +185,7 @@ begin
 
   insert into public.audit_logs (actor_user_id, action, entity, entity_id, detail)
   values (target, 'role.bootstrap', 'user_roles', target::text,
-          jsonb_build_object('role', 'super_admin'));
+          jsonb_build_object('role'::text, 'super_admin'::text));
 
   return 'Granted super_admin. Sign out and back in so the new role enters the token.';
 end;

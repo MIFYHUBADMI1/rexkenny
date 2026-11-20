@@ -30,6 +30,9 @@ export async function GET(request: NextRequest) {
 
   const { error } = await sb.auth.exchangeCodeForSession(code);
   if (error) {
+    // The real reason (missing code verifier, expired flow, etc.) only shows
+    // here — surface it in Vercel runtime logs, never to the visitor.
+    console.error("[auth/callback] code exchange failed:", error.message, error.code);
     return NextResponse.redirect(`${origin}/auth/error?reason=exchange-failed`);
   }
 

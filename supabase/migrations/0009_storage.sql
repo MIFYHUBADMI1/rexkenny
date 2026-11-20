@@ -137,7 +137,7 @@ create policy "staff delete own uploads"
   to authenticated
   using (
     public.can_edit_content()
-    and owner = public.auth_uid()::text
+    and owner::text = public.auth_uid()::text
   );
 
 create policy "admins delete any upload"
