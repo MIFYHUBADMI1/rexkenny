@@ -64,7 +64,7 @@ export async function submitContact(
     return {
       status: "error",
       message:
-        "This form cannot save right now: Supabase is not connected. Your enquiry was NOT sent.",
+        "This form cannot send right now — please try again later or reach us on the contact details below.",
     };
   }
 

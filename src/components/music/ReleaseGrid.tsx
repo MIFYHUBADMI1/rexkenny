@@ -17,8 +17,7 @@ export function ReleaseGrid({
     return (
       <EmptyState
         title="No releases published yet"
-        body="When the admin publishes a release it appears here, on /music and in the sitemap automatically."
-        action={{ href: "/admin/setup", label: "Set up the catalogue" }}
+        body="New releases will appear here as soon as they are out."
       />
     );
   }
@@ -108,7 +107,7 @@ export function ReleaseCard({
 
       {source === "demo" && (
         <p className="flex items-center gap-1.5 border-t border-charcoal px-4 py-2 text-[0.6875rem] text-smoke">
-          <Disc3 size={11} /> Placeholder · {SITE.shortName} catalogue
+          <Disc3 size={11} /> Preview · {SITE.shortName} catalogue
         </p>
       )}
     </article>

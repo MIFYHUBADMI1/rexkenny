@@ -16,15 +16,15 @@ export function generateMetadata(): Metadata {
 
 const MESSAGES: Record<string, string> = {
   "not-staff":
-    "You are signed in, but this account has no staff role, so it cannot open the dashboard. An administrator can grant you one.",
+    "You are signed in, but this account does not have dashboard access. An administrator can grant it.",
   "not-editor":
-    "This area changes catalogue content. Your role can view the dashboard but not edit it.",
+    "This area is for the artist team. Your account can view the dashboard but not make changes.",
   "not-admin":
-    "This area manages settings, users and distribution. It is restricted to administrators.",
+    "This area is restricted to administrators.",
   "no-code":
     "The sign-in link was incomplete. It may have already been used, or copied only part-way.",
   offline:
-    "Supabase is not connected on this deployment, so a session cannot be created.",
+    "Sign-in is temporarily unavailable. Please try again later.",
   "exchange-failed":
     "That sign-in link is no longer valid. Request a new one, or sign in with your password.",
 };

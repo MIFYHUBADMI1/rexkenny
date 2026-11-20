@@ -19,10 +19,10 @@ export function SmartLinkGrid({
   if (live.length === 0) {
     return (
       <div className="rounded-lg border border-dashed border-ash bg-ink-raised p-8">
-        <p className="font-semibold text-mist">No verified destinations yet</p>
+        <p className="font-semibold text-mist">Not available everywhere yet</p>
         <p className="mx-auto mt-2 max-w-md text-sm leading-relaxed text-smoke">
-          Streaming URLs are added per release in the admin. Until one is saved here, this
-          page stays quiet instead of guessing where the music might be.
+          This release is not on every streaming service yet. Where an official link
+          exists it appears here — we never guess or invent one.
         </p>
         <div className="mt-6 flex flex-wrap justify-center gap-3">
           <Link href="/music" className="btn-ghost">Browse the catalogue</Link>

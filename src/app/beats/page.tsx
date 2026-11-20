@@ -53,8 +53,8 @@ export default async function BeatsPage() {
             title="No beats on sale yet"
             body={
               source === "demo"
-                ? `Supabase is not connected, so the catalogue is empty. Nothing is invented here — beats appear only once they are uploaded and marked published.`
-                : `No beats are marked published yet.`
+                ? "New instrumentals will appear here as they are released."
+                : `No beats are on sale yet.`
             }
             action={{ href: "/licensing", label: "Read the licensing terms" }}
           />

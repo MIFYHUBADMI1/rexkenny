@@ -107,8 +107,8 @@ export default async function LicensingPage() {
                 title="No beats published yet"
                 body={
                   source === "demo"
-                    ? "The beat catalogue is empty because Supabase is not connected. Once it is, instrumentals uploaded and marked published appear here."
-                    : "No instrumentals are marked as published. Add them in the admin Beat store."
+                    ? "The beat catalogue is being updated — check back soon."
+                    : "No instrumentals are available for licensing right now."
                 }
                 action={{ href: "/contact?kind=beat-licence", label: "Ask about a custom beat" }}
               />

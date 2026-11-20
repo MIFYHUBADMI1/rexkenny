@@ -1,24 +1,20 @@
-import Link from "next/link";
 import { Play, Disc3 } from "lucide-react";
 
 /**
- * Honest demo banner: shown whenever content comes from the bundled
- * placeholder file instead of the configured Supabase project.
+ * Preview banner: shown whenever content comes from the bundled
+ * placeholder file instead of the live catalogue, so visitors are never
+ * misled into thinking placeholder details are official.
  */
 export function DemoNotice() {
   return (
     <div className="border-y border-gold-deep/40 bg-gold/10">
       <div className="container-page flex flex-wrap items-center gap-x-3 gap-y-1 py-3 text-sm">
         <span className="inline-flex items-center gap-2 font-semibold text-gold">
-          <Disc3 size={15} /> Demo content
+          <Disc3 size={15} /> Preview content
         </span>
         <span className="text-mist">
-          Supabase is not connected, so this page shows structural placeholders —
-          not real releases.
+          The official catalogue is being updated — some details on this page may change.
         </span>
-        <Link href="/admin/setup" className="font-semibold text-gold underline">
-          Connect your project
-        </Link>
       </div>
     </div>
   );

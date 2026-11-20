@@ -1,5 +1,4 @@
 import Link from "next/link";
-import { SITE } from "@/lib/site";
 
 export default function NotFound() {
   return (
@@ -10,7 +9,7 @@ export default function NotFound() {
           Nothing here
         </h1>
         <p className="mx-auto mt-4 max-w-md leading-relaxed text-smoke">
-          That page does not exist on {SITE.url}. If you followed a link from a poster,
+          That page does not exist on the official site. If you followed a link from a poster,
           bio or social profile, tell us and we will fix it.
         </p>
         <div className="mt-8 flex flex-wrap justify-center gap-3">

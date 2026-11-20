@@ -65,8 +65,7 @@ export default async function VideosPage() {
         {videos.length === 0 ? (
           <EmptyState
             title="No videos published yet"
-            body="Add a YouTube link in the admin Video manager and it appears here with its own SEO page and VideoObject structured data."
-            action={{ href: "/admin/setup", label: "Set up Supabase" }}
+            body="New music videos, visualisers and studio sessions will appear here as they are released."
           />
         ) : (
           <ul className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">

@@ -37,8 +37,7 @@ export default async function LoginPage({
       <p className="eyebrow">Account</p>
       <h1 className="mt-2 font-[family-name:var(--font-display)] text-4xl font-black">Sign in</h1>
       <p className="mt-4 text-sm leading-relaxed text-smoke">
-        Fans use this for favourites. The artist team uses it for the dashboard at{" "}
-        <span className="text-mist">/admin</span>.
+        Fans use this for favourites. The artist team uses it for the dashboard.
       </p>
 
       {session && (
@@ -66,10 +65,7 @@ export default async function LoginPage({
         <AuthForm mode="login" next={target} googleAvailable />
       ) : (
         <p className="mt-8 rounded-lg border border-charcoal bg-ink-raised p-5 text-sm leading-relaxed text-smoke">
-          No accounts exist on this deployment yet: Supabase is not connected, so there is
-          nothing to sign in to. Set <span className="text-gold">NEXT_PUBLIC_SUPABASE_URL</span>{" "}
-          and <span className="text-gold">NEXT_PUBLIC_SUPABASE_ANON_KEY</span>, run the
-          migrations, then register the first account and grant it a staff role.
+          Accounts are not available on this site yet — please check back soon.
         </p>
       )}
     </div>

@@ -37,16 +37,15 @@ export default async function RegisterPage({
         Create an account
       </h1>
       <p className="mt-4 text-sm leading-relaxed text-smoke">
-        A new account is a fan. Staff roles are granted by an administrator afterwards — the
-        form cannot give itself one, and the database refuses the same thing.
+        Creating an account only makes you a fan — it never gives access to the
+        artist dashboard.
       </p>
 
       {isSupabaseConfigured ? (
         <AuthForm mode="register" next={target} googleAvailable />
       ) : (
         <p className="mt-8 rounded-lg border border-charcoal bg-ink-raised p-5 text-sm leading-relaxed text-smoke">
-          Registration is offline: Supabase is not connected on this deployment. Configure it
-          first, otherwise an account would be created in the browser and stored nowhere.
+          Registration is unavailable right now — please try again later.
         </p>
       )}
 

@@ -10,7 +10,6 @@ const legal = [
 ];
 
 const published = SOCIALS.filter((s) => s.url.length > 0);
-const configured = SITE.gscToken !== "";
 
 export function Footer() {
   return (
@@ -68,8 +67,7 @@ export function Footer() {
               </ul>
             ) : (
               <p className="mt-4 text-sm text-smoke">
-                Social links are not published yet. Add them in the admin under
-                Artist profile.
+                Social links will appear here as soon as they are published.
               </p>
             )}
           </nav>
@@ -105,11 +103,7 @@ export function Footer() {
           <p>
             © {new Date().getFullYear()} {SITE.legalName}. All rights reserved.
           </p>
-          <p>
-            {configured
-              ? "Search Console verification active."
-              : "Search Console not yet verified — set NEXT_PUBLIC_GSC_SITE_VERIFICATION."}
-          </p>
+          <p>{SITE.city}, {SITE.country}</p>
         </div>
       </div>
     </footer>

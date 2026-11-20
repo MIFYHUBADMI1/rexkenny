@@ -98,7 +98,8 @@ export async function submitNewsletter(
   if (!sb) {
     return {
       status: "error",
-      message: "Signup is offline: Supabase is not connected, so nothing was stored.",
+      message:
+        "Signup is temporarily unavailable — nothing was saved. Please try again later.",
     };
   }
 
@@ -133,16 +134,11 @@ export async function submitNewsletter(
     case "sent":
       return { status: "ok", message: "Check your inbox for a confirmation link." };
     case "no-provider":
-      return {
-        status: "ok",
-        message:
-          "Saved. The confirmation email could not be sent yet — no email provider is configured.",
-      };
     case "no-admin":
       return {
         status: "ok",
         message:
-          "Saved. The confirmation email needs the Supabase service role key configured on the server.",
+          "Saved. The confirmation email could not be sent yet — please try again later.",
       };
     default:
       return {

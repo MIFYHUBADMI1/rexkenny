@@ -51,7 +51,7 @@ export default async function NewsPage() {
         {posts.length === 0 ? (
           <EmptyState
             title="Nothing published yet"
-            body="Drafts stay hidden. When a post is published in the admin CMS it appears here, gets its own Article structured-data page and is added to the sitemap."
+            body="News, announcements and studio updates will appear here as they are published."
             action={{ href: "/contact", label: "Talk to the team" }}
           />
         ) : (

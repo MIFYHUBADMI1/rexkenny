@@ -22,10 +22,8 @@ export function SubscribeCall() {
               <div className="rounded-lg border border-dashed border-ash bg-ink/60 p-6 text-sm">
                 <p className="font-semibold text-gold">Email signup is offline</p>
                 <p className="mt-2 leading-relaxed text-smoke">
-                  Subscriptions are not being collected because no email provider is
-                  configured. Set the <code>SMTP_*</code> variables (Gmail App
-                  Password) to switch this on. Signups are never stored in a way
-                  that pretends to work.
+                  Email signup is temporarily unavailable — please check back
+                  soon. Signups are never stored in a way that pretends to work.
                 </p>
               </div>
             )}
