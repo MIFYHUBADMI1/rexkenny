@@ -30,14 +30,7 @@ export async function GET(request: NextRequest) {
 
   const { error } = await sb.auth.exchangeCodeForSession(code);
   if (error) {
-    // The real reason (missing code verifier, expired flow, etc.) only shows
-    // here — log it server-side and pass a short version back to the error
-    // page so it is visible without dashboard log access.
-    console.error("[auth/callback] code exchange failed:", error.message, error.code);
-    const detail = `${error.code ?? "error"}: ${error.message}`.slice(0, 180);
-    return NextResponse.redirect(
-      `${origin}/auth/error?reason=exchange-failed&detail=${encodeURIComponent(detail)}`,
-    );
+    return NextResponse.redirect(`${origin}/auth/error?reason=exchange-failed`);
   }
 
   const response = NextResponse.redirect(`${origin}${next}`);
