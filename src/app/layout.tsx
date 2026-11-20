@@ -6,6 +6,7 @@ import { buildMetadata } from "@/lib/seo/metadata";
 import { Header } from "@/components/layout/Header";
 import { PageTransition } from "@/components/motion/PageTransition";
 import { Footer } from "@/components/layout/Footer";
+import { Toaster } from "@/components/ui/Toaster";
 import { Analytics } from "@/components/seo/Analytics";
 
 const sans = Inter({
@@ -65,6 +66,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
           <PageTransition>{children}</PageTransition>
         </main>
         <Footer />
+        <Toaster />
         <Analytics />
       </body>
     </html>

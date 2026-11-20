@@ -1,5 +1,6 @@
 "use server";
 
+import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
 import { z } from "zod";
 import { createSupabaseServerClient } from "@/lib/supabase/server";
@@ -32,8 +33,14 @@ function offline(): AuthState {
   return {
     status: "error",
     message:
-      "Sign-in is unavailable: Supabase is not connected on this deployment, so no session can be created.",
+      "Sign-in is unavailable: accounts are not connected on this site yet. Please try again later.",
   };
+}
+
+/** Short-lived flag the Toaster reads once to show the welcome message. */
+async function markWelcome(kind: "back" | "joined") {
+  const store = await cookies();
+  store.set("rk_welcome", kind, { path: "/", maxAge: 60, sameSite: "lax" });
 }
 
 export async function signInAction(
@@ -69,6 +76,7 @@ export async function signInAction(
     };
   }
 
+  await markWelcome("back");
   redirect(safeNext(formData.get("next")));
 }
 
@@ -119,7 +127,10 @@ export async function signUpAction(
   // Supabase returns a user but no session until the address is confirmed. If
   // confirmation is disabled in the project the session is returned here, and
   // saying "check your inbox" when it never arrives would be a lie.
-  if (data.session) redirect("/admin");
+  if (data.session) {
+    await markWelcome("joined");
+    redirect("/admin");
+  }
 
   return {
     status: "ok",

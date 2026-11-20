@@ -1,12 +1,17 @@
 "use client";
 
-import { useActionState } from "react";
+import { useActionState, useEffect } from "react";
 import { submitNewsletter, type NewsletterState } from "@/actions/newsletter";
+import { toast } from "@/components/ui/Toaster";
 
 const initialState: NewsletterState = { status: "idle" };
 
 export function NewsletterForm() {
   const [state, action, pending] = useActionState(submitNewsletter, initialState);
+
+  useEffect(() => {
+    if (state.status === "ok") toast(state.message);
+  }, [state]);
 
   return (
     <form action={action} className="space-y-3">

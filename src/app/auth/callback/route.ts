@@ -33,5 +33,8 @@ export async function GET(request: NextRequest) {
     return NextResponse.redirect(`${origin}/auth/error?reason=exchange-failed`);
   }
 
-  return NextResponse.redirect(`${origin}${next}`);
+  const response = NextResponse.redirect(`${origin}${next}`);
+  // One-time flag the Toaster turns into the welcome message.
+  response.cookies.set("rk_welcome", "back", { path: "/", maxAge: 60, sameSite: "lax" });
+  return response;
 }

@@ -4,6 +4,7 @@ import { useState, useTransition } from "react";
 import Link from "next/link";
 import { Heart } from "lucide-react";
 import { toggleFavourite } from "@/actions/favourites";
+import { toast } from "@/components/ui/Toaster";
 
 /**
  * Save/unsave button for a release. Signed-out visitors get a link to sign in
@@ -47,6 +48,11 @@ export function FavouriteButton({
             const result = await toggleFavourite(releaseId);
             if (result.status === "ok") {
               setSaved(result.saved);
+              toast(
+                result.saved
+                  ? "Saved to your favourites — find it under Account."
+                  : "Removed from your favourites.",
+              );
             } else {
               setError(result.message);
             }

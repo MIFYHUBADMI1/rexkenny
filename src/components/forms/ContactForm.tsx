@@ -1,7 +1,8 @@
 "use client";
 
-import { useActionState } from "react";
+import { useActionState, useEffect } from "react";
 import { submitContact, type ContactState } from "@/actions/contact";
+import { toast } from "@/components/ui/Toaster";
 
 const initialState: ContactState = { status: "idle" };
 
@@ -11,6 +12,10 @@ export function ContactForm({
   kinds: { value: string; label: string }[];
 }) {
   const [state, action, pending] = useActionState(submitContact, initialState);
+
+  useEffect(() => {
+    if (state.status === "ok") toast(state.message);
+  }, [state]);
 
   return (
     <form action={action} className="space-y-5">
