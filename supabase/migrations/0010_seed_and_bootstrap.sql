@@ -131,14 +131,14 @@ on conflict (provider) do nothing;
 -- ---------------------------------------------------------------------------
 insert into public.site_settings (key, value, label)
 values
-  ('tagline', to_jsonb('From Kasese, Uganda to the World.'), 'Tagline'),
-  ('hero_role', to_jsonb('African Dancehall Artist'), 'Hero role label'),
+  ('tagline', to_jsonb('From Kasese, Uganda to the World.'::text), 'Tagline'),
+  ('hero_role', to_jsonb('African Dancehall Artist'::text), 'Hero role label'),
   ('nav_enabled',
    '{"music":true,"videos":true,"lyrics":true,"beats":true,"epk":true,"news":true}'::jsonb,
    'Navigation toggles'),
-  ('comment_moderation', to_jsonb('manual'), 'Comment moderation'),
+  ('comment_moderation', to_jsonb('manual'::text), 'Comment moderation'),
   ('newsletter_double_opt_in', to_jsonb(true), 'Require email confirmation before sending'),
-  ('analytics_consent_mode', to_jsonb('basic'), 'Analytics consent mode')
+  ('analytics_consent_mode', to_jsonb('basic'::text), 'Analytics consent mode')
 on conflict (key) do update set label = excluded.label;
 
 -- ---------------------------------------------------------------------------

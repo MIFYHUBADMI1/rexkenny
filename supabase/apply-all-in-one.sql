@@ -167,7 +167,7 @@ begin
     where ur.user_id = target_user;
 
   update auth.users
-     set app_metadata = coalesce(app_metadata, '{}'::jsonb)
+     set raw_app_meta_data = coalesce(raw_app_meta_data, '{}'::jsonb)
                           || jsonb_build_object('roles', role_list)
    where id = target_user;
 
@@ -189,12 +189,14 @@ create or replace function public.record_audit(
   detail jsonb default '{}'::jsonb
 )
 returns void
-language sql
+language plpgsql
 security definer
 set search_path = public, pg_temp
 as $$
+begin
   insert into public.audit_logs (actor_user_id, action, entity, entity_id, detail)
   values (actor, action, entity, entity_id, coalesce(detail, '{}'::jsonb));
+end;
 $$;
 
 -- ---------------------------------------------------------------------------
@@ -1344,10 +1346,10 @@ create policy "submissions: editors create prepared rows"
 create policy "submissions: editors update without verifying"
   on public.distribution_submissions for update
   to authenticated
-  using (public.can_edit_content())
+  using (public.can_edit_content() and api_verified = false)
   with check (
     public.can_edit_content()
-    and api_verified = old.api_verified
+    and api_verified = false
   );
 
 create policy "submissions: admins delete"
@@ -2739,7 +2741,7 @@ create policy "staff delete own uploads"
   to authenticated
   using (
     public.can_edit_content()
-    and owner = public.auth_uid()::text
+    and owner::text = public.auth_uid()::text
   );
 
 create policy "admins delete any upload"
@@ -2890,14 +2892,14 @@ on conflict (provider) do nothing;
 -- ---------------------------------------------------------------------------
 insert into public.site_settings (key, value, label)
 values
-  ('tagline', to_jsonb('From Kasese, Uganda to the World.'), 'Tagline'),
-  ('hero_role', to_jsonb('African Dancehall Artist'), 'Hero role label'),
+  ('tagline', to_jsonb('From Kasese, Uganda to the World.'::text), 'Tagline'),
+  ('hero_role', to_jsonb('African Dancehall Artist'::text), 'Hero role label'),
   ('nav_enabled',
    '{"music":true,"videos":true,"lyrics":true,"beats":true,"epk":true,"news":true}'::jsonb,
    'Navigation toggles'),
-  ('comment_moderation', to_jsonb('manual'), 'Comment moderation'),
+  ('comment_moderation', to_jsonb('manual'::text), 'Comment moderation'),
   ('newsletter_double_opt_in', to_jsonb(true), 'Require email confirmation before sending'),
-  ('analytics_consent_mode', to_jsonb('basic'), 'Analytics consent mode')
+  ('analytics_consent_mode', to_jsonb('basic'::text), 'Analytics consent mode')
 on conflict (key) do update set label = excluded.label;
 
 -- ---------------------------------------------------------------------------
@@ -2944,7 +2946,7 @@ begin
 
   insert into public.audit_logs (actor_user_id, action, entity, entity_id, detail)
   values (target, 'role.bootstrap', 'user_roles', target::text,
-          jsonb_build_object('role', 'super_admin'));
+          jsonb_build_object('role'::text, 'super_admin'::text));
 
   return 'Granted super_admin. Sign out and back in so the new role enters the token.';
 end;

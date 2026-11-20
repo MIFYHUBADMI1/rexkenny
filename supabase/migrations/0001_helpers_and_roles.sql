@@ -163,7 +163,7 @@ begin
     where ur.user_id = target_user;
 
   update auth.users
-     set app_metadata = coalesce(app_metadata, '{}'::jsonb)
+     set raw_app_meta_data = coalesce(raw_app_meta_data, '{}'::jsonb)
                           || jsonb_build_object('roles', role_list)
    where id = target_user;
 
