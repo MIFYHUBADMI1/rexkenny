@@ -5,6 +5,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { Menu, X, Search } from "lucide-react";
 import { NAV, SITE } from "@/lib/site";
+import { AccountLink } from "@/components/layout/AccountLink";
 
 export function Header() {
   const [open, setOpen] = useState(false);
@@ -76,12 +77,7 @@ export function Header() {
           >
             <Search size={17} />
           </Link>
-          <Link
-            href="/auth/login"
-            className="hidden h-10 items-center rounded-full border border-ash px-4 text-sm font-semibold text-mist transition-colors hover:border-gold hover:text-gold md:inline-flex"
-          >
-            Sign in
-          </Link>
+          <AccountLink variant="desktop" />
           <Link href="/listen" className="btn-gold hidden md:inline-flex" prefetch={false}>
             Listen Now
           </Link>
@@ -119,22 +115,7 @@ export function Header() {
                 </Link>
               </li>
             ))}
-            <li className="flex gap-3 py-4">
-              <Link
-                href="/auth/login"
-                onClick={() => setOpen(false)}
-                className="btn-ghost flex-1 text-center"
-              >
-                Sign in
-              </Link>
-              <Link
-                href="/auth/register"
-                onClick={() => setOpen(false)}
-                className="btn-gold flex-1 text-center"
-              >
-                Create account
-              </Link>
-            </li>
+            <AccountLink variant="mobile" onNavigate={() => setOpen(false)} />
             <li className="pb-4">
               <Link href="/listen" onClick={() => setOpen(false)} className="btn-gold w-full">
                 Listen Now

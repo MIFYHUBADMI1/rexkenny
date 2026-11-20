@@ -3,6 +3,7 @@ import { AuthForm } from "@/components/forms/AuthForm";
 import { buildMetadata } from "@/lib/seo/metadata";
 import { isSupabaseConfigured } from "@/lib/config";
 import { sessionOrNull } from "@/lib/auth/session";
+import { signOutAction } from "@/actions/auth";
 import { SITE } from "@/lib/site";
 
 export const dynamic = "force-dynamic";
@@ -40,14 +41,25 @@ export default async function LoginPage({
         <span className="text-mist">/admin</span>.
       </p>
 
-      {session?.isStaff && (
-        <p className="mt-6 rounded-lg border border-gold/40 bg-gold/5 p-4 text-sm text-gold">
-          You are signed in as {session.roles.join(", ")}.{" "}
-          <a href={target} className="underline">
-            Go to the dashboard
-          </a>
-          .
-        </p>
+      {session && (
+        <div className="mt-6 rounded-lg border border-gold/40 bg-gold/5 p-4 text-sm text-gold">
+          <p>
+            You are signed in{session.email ? ` as ${session.email}` : ""}
+            {session.roles.length > 0 && ` (${session.roles.join(", ")})`}.
+          </p>
+          <div className="mt-3 flex flex-wrap gap-3">
+            {session.isStaff && (
+              <a href={target} className="underline">
+                Go to the dashboard
+              </a>
+            )}
+            <form action={signOutAction}>
+              <button type="submit" className="underline">
+                Sign out
+              </button>
+            </form>
+          </div>
+        </div>
       )}
 
       {isSupabaseConfigured ? (
