@@ -10,6 +10,7 @@ import { videoFaq } from "@/lib/seo/faq";
 import { buildGraph, videoNode, musicGroupNode, breadcrumbNode } from "@/lib/seo/jsonld";
 import { SITE } from "@/lib/site";
 import { YouTubeEmbed } from "@/components/video/YouTubeEmbed";
+import { ShareButton } from "@/components/music/ShareButton";
 
 export const dynamic = "force-dynamic";
 
@@ -69,6 +70,16 @@ export default async function VideoPage({
         <div className="mt-6 aspect-video w-full overflow-hidden rounded-xl border border-charcoal bg-ink-soft">
           {video.youtubeId ? (
             <YouTubeEmbed youTubeId={video.youtubeId} title={video.title} />
+          ) : video.externalUrl && /\.(mp4|webm)(\?|#|$)/i.test(video.externalUrl) ? (
+            // Direct video files (e.g. the site-videos bucket) play inline;
+            // page links to other hosts keep the "watch on the host" button.
+            <video
+              controls
+              preload="metadata"
+              src={video.externalUrl}
+              className="h-full w-full bg-black"
+              aria-label={video.title}
+            />
           ) : (
             <div className="flex h-full flex-col items-center justify-center gap-3 p-6 text-center">
               <p className="text-smoke">
@@ -93,6 +104,9 @@ export default async function VideoPage({
               {SITE.shortName}
               {video.releaseDate && ` · ${video.releaseDate}`}
             </p>
+            <div className="mt-4">
+              <ShareButton path={`/videos/${video.slug}`} title={video.title} />
+            </div>
             {video.description && (
               <p className="mt-5 leading-relaxed text-mist">{video.description}</p>
             )}

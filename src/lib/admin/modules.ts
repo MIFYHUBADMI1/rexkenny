@@ -24,9 +24,23 @@ export const ADMIN_MODULES: AdminModule[] = [
     built: true,
   },
   {
+    href: "/admin/assistant",
+    label: "Assistant",
+    blurb: "Ask about the catalogue and get onboarding help. Remembers the conversation.",
+    roles: ["super_admin", "admin", "editor", "marketing_manager", "analytics_viewer"],
+    built: true,
+  },
+  {
     href: "/admin/releases",
     label: "Releases",
     blurb: "Draft to released, with readiness checks and metadata export.",
+    roles: ["super_admin", "admin", "editor"],
+    built: true,
+  },
+  {
+    href: "/admin/music",
+    label: "Add music",
+    blurb: "Upload a song, cover art and optional video from your device.",
     roles: ["super_admin", "admin", "editor"],
     built: true,
   },

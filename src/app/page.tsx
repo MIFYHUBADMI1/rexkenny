@@ -39,7 +39,7 @@ export default async function HomePage() {
   const artist = artistRes.data;
   const featured = releases[0] ?? null;
   const latest = releases.slice(0, 6);
-  const video = videosRes.data[0] ?? null;
+  const videos = videosRes.data.slice(0, 3);
 
   return (
     <>
@@ -83,24 +83,38 @@ export default async function HomePage() {
         <ReleaseGrid releases={latest} source={source} />
       </Section>
 
-      <Section eyebrow="Live" title="Featured video" action={{ href: "/videos", label: "All videos" }}>
-        {video ? (
-          <Link
-            href={`/videos/${video.slug}`}
-            className="rk-lift rk-zoom group block overflow-hidden rounded-lg border border-ash"
-          >
-            {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img
-              src={video.thumbnailUrl ?? "/images/placeholder-cover-800.jpg"}
-              alt={video.title}
-              className="aspect-video w-full object-cover"
-              loading="lazy"
-              decoding="async"
-            />
-          </Link>
+      <Section eyebrow="Live" title="Latest videos" action={{ href: "/videos", label: "All videos" }}>
+        {videos.length > 0 ? (
+          <ul className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+            {videos.map((v) => (
+              <li key={v.id}>
+                <Link
+                  href={`/videos/${v.slug}`}
+                  className="rk-lift rk-zoom group block overflow-hidden rounded-lg border border-ash"
+                >
+                  {/* eslint-disable-next-line @next/next/no-img-element */}
+                  <img
+                    src={v.thumbnailUrl ?? "/images/placeholder-cover-800.jpg"}
+                    alt={v.title}
+                    className="aspect-video w-full object-cover"
+                    loading="lazy"
+                    decoding="async"
+                  />
+                  <span className="block p-4">
+                    <span className="text-[0.6875rem] uppercase tracking-[0.18em] text-gold">
+                      {v.category.replace(/-/g, " ")}
+                    </span>
+                    <span className="mt-1 block font-semibold group-hover:text-gold">
+                      {v.title}
+                    </span>
+                  </span>
+                </Link>
+              </li>
+            ))}
+          </ul>
         ) : (
           <p className="text-smoke">
-            Videos are not published yet. Once the admin adds a YouTube link it appears here.
+            Videos are not published yet. Once the admin adds one it appears here.
           </p>
         )}
       </Section>

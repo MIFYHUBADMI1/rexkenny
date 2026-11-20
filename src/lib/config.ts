@@ -21,6 +21,9 @@ export const env = {
   emailFrom: truthy(process.env.EMAIL_FROM),
   ga4Id: truthy(process.env.NEXT_PUBLIC_GA4_MEASUREMENT_ID),
   aiApiKey: truthy(process.env.AI_API_KEY),
+  aiProvider: truthy(process.env.AI_PROVIDER)?.toLowerCase(),
+  aiModel: truthy(process.env.AI_MODEL),
+  aiBaseUrl: truthy(process.env.AI_BASE_URL),
 } as const;
 
 /** Server-only guard. Importing this from client code throws at build time. */
@@ -44,7 +47,7 @@ export const isEmailConfigured = Boolean(
   env.smtpHost && env.smtpUser && env.smtpPass && env.emailFrom,
 );
 export const isAnalyticsConfigured = Boolean(env.ga4Id);
-export const isAiConfigured = Boolean(env.aiApiKey);
+export const isAiConfigured = Boolean(env.aiApiKey && env.aiModel);
 
 export type IntegrationState = {
   key: string;
@@ -85,7 +88,8 @@ export function integrationStates(): IntegrationState[] {
       key: "ai",
       label: "AI assistant",
       configured: isAiConfigured,
-      action: "Set AI_API_KEY (server-side only).",
+      action:
+        "Set AI_PROVIDER, AI_MODEL and AI_API_KEY (server-side only).",
     },
   ];
 }

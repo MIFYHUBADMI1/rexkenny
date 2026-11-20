@@ -73,6 +73,7 @@ export const TERRITORY_CHOICES = [
 ] as const;
 
 export const LANGUAGE_CHOICES = [
+  "Lukonzo",
   "Runyankole",
   "Luganda",
   "Swahili",

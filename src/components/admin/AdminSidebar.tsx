@@ -11,9 +11,11 @@ import {
   Inbox,
   LayoutDashboard,
   Mail,
+  Music,
   Search,
   Send,
   Settings,
+  Sparkles,
   TrendingUp,
   Users,
   FileText,
@@ -24,7 +26,9 @@ import type { Role } from "@/lib/auth/roles";
 
 const ICONS: Record<string, LucideIcon> = {
   "/admin": LayoutDashboard,
+  "/admin/assistant": Sparkles,
   "/admin/releases": Disc3,
+  "/admin/music": Music,
   "/admin/distribution": Send,
   "/admin/seo": Search,
   "/admin/media": Image,
@@ -38,7 +42,7 @@ const ICONS: Record<string, LucideIcon> = {
   "/admin/setup": CheckCircle2,
 };
 
-function NavItem({ module, active }: { module: AdminModule; active: boolean }) {
+export function NavItem({ module, active }: { module: AdminModule; active: boolean }) {
   const Icon = ICONS[module.href] ?? Circle;
 
   if (!module.built) {
@@ -75,12 +79,17 @@ function NavItem({ module, active }: { module: AdminModule; active: boolean }) {
   );
 }
 
-export function AdminSidebar({ roles }: { roles: Role[] }) {
+/**
+ * The shared list of dashboard sections. Rendered by the desktop sidebar and
+ * by the Workspace group inside the header's mobile menu, so both always show
+ * the same items.
+ */
+export function AdminNavList({ roles }: { roles: Role[] }) {
   const pathname = usePathname();
   const modules = visibleModules(roles);
 
   return (
-    <nav aria-label="Dashboard" className="lg:sticky lg:top-0">
+    <>
       <p className="eyebrow px-3">Workspace</p>
       <ul className="mt-3 space-y-1">
         {modules.map((m) => (
@@ -90,6 +99,18 @@ export function AdminSidebar({ roles }: { roles: Role[] }) {
       <p className="mt-4 px-3 text-xs leading-relaxed text-smoke">
         Greyed items are not built yet, so they are not links.
       </p>
+    </>
+  );
+}
+
+/**
+ * Desktop sidebar column. Below lg the header's mobile menu carries the same
+ * links, so this is hidden there to keep the page free of duplicate nav.
+ */
+export function AdminSidebar({ roles }: { roles: Role[] }) {
+  return (
+    <nav aria-label="Dashboard" className="hidden lg:sticky lg:top-24 lg:block">
+      <AdminNavList roles={roles} />
     </nav>
   );
 }

@@ -14,6 +14,7 @@ import {
   TERRITORY_CHOICES,
 } from "@/lib/admin/options";
 import { STATUS_LABEL } from "@/lib/admin/readiness";
+import { ReleaseCopyAssist } from "@/components/admin/AiAssist";
 import type { Release } from "@/lib/types";
 import type { AdminFormState } from "@/lib/admin/form";
 
@@ -25,7 +26,7 @@ const EMPTY = {
   releaseDate: null,
   genre: "African Dancehall",
   subgenre: null,
-  language: null,
+  language: "Lukonzo",
   description: null,
   artworkUrl: null,
   artworkAlt: "",
@@ -59,11 +60,14 @@ export function ReleaseForm({
   release,
   action,
   genres,
+  aiEnabled = false,
 }: {
   /** Null on the create screen, where every box starts empty. */
   release: Release | null;
   action: (prev: AdminFormState, fd: FormData) => Promise<AdminFormState>;
   genres: { slug: string; name: string }[];
+  /** Set when AI_PROVIDER/AI_MODEL/AI_API_KEY resolve; hides the draft button otherwise. */
+  aiEnabled?: boolean;
 }) {
   const r = release ?? EMPTY;
 
@@ -210,6 +214,8 @@ export function ReleaseForm({
         <Field label="Description" name="description" hint="Used on the release page and in the EPK.">
           <TextArea name="description" rows={4} defaultValue={r.description} />
         </Field>
+
+        {aiEnabled ? <ReleaseCopyAssist /> : null}
 
         <Field
           label="Official video URL"

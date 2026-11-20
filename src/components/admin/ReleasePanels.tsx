@@ -23,6 +23,7 @@ import {
   updateSubmissionStatusAction,
 } from "@/actions/distribution";
 import { evaluateReadiness } from "@/lib/admin/readiness";
+import { SeoCopyAssist } from "@/components/admin/AiAssist";
 import { adapterFor } from "@/lib/admin/distributors";
 import {
   DISTRIBUTION_STATUSES,
@@ -477,7 +478,13 @@ export function DistributionPanel({
 
 /* --------------------------------------------------------------------- SEO */
 
-export function SearchAppearancePanel({ release }: { release: Release }) {
+export function SearchAppearancePanel({
+  release,
+  aiEnabled = false,
+}: {
+  release: Release;
+  aiEnabled?: boolean;
+}) {
   const publicUrl = `/music/${release.slug}`;
   return (
     <Panel
@@ -540,6 +547,16 @@ export function SearchAppearancePanel({ release }: { release: Release }) {
         >
           <TextInput name="seo_description" defaultValue={release.seo.description} />
         </Field>
+
+        {aiEnabled ? (
+          <SeoCopyAssist
+            title={release.title}
+            releaseType={release.releaseType}
+            genre={release.genre}
+            description={release.description}
+            slug={release.slug}
+          />
+        ) : null}
       </AdminForm>
     </Panel>
   );

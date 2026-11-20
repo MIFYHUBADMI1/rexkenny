@@ -7,7 +7,7 @@ import { listGenres } from "@/lib/admin/catalogue";
 import { ReleaseForm } from "@/components/admin/ReleaseForm";
 import { createReleaseAction } from "@/actions/releases";
 import { FormNote, Panel } from "@/components/admin/ui";
-import { isSupabaseConfigured } from "@/lib/config";
+import { isAiConfigured, isSupabaseConfigured } from "@/lib/config";
 
 export const dynamic = "force-dynamic";
 
@@ -57,6 +57,7 @@ export default async function NewReleasePage() {
         release={null}
         action={createReleaseAction}
         genres={genres.ok ? genres.data : []}
+        aiEnabled={isAiConfigured}
       />
 
       <Panel

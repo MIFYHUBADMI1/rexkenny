@@ -291,6 +291,77 @@ export async function changeReleaseStatusAction(
   return ok(`Status set to ${STATUS_LABEL[next]}. The public site follows that state.`);
 }
 
+/**
+ * Publish or unpublish a release on this site.
+ *
+ * The status workflow deliberately reserves "released" for states a
+ * distributor can verify, but a record the artist uploads and releases on
+ * their own platform is live the moment the admin says so — that is what this
+ * action records. It refuses to touch submitted/processing rows, where the
+ * distribution record owns the state, and the database still requires a
+ * release date before a row may be "released".
+ */
+export async function publishReleaseAction(
+  _prev: AdminFormState,
+  fd: FormData,
+): Promise<AdminFormState> {
+  const id = str(fd, "id");
+  const currentSlug = str(fd, "current_slug");
+  const session = await requireEditor(`/admin/releases/${currentSlug}`);
+  const unpublish = bool(fd, "unpublish");
+
+  const sb = await createSupabaseServerClient();
+  if (!sb) return NO_DATABASE;
+
+  const { data: existing, error: readError } = await sb
+    .from("releases")
+    .select("status,release_date")
+    .eq("id", id)
+    .maybeSingle();
+  if (readError) return databaseFail(readError);
+  if (!existing) return fail("This release no longer exists, or your role cannot see it.");
+
+  const status = String(existing.status) as ReleaseStatus;
+  if (!unpublish && (status === "submitted" || status === "processing")) {
+    return fail(
+      `This release is ${STATUS_LABEL[status].toLowerCase()} through a distributor. Its public state belongs to that record — update the submission instead of publishing here.`,
+    );
+  }
+  if (!unpublish && status === "released") {
+    return ok("This release is already live on the site.");
+  }
+  if (unpublish && status !== "released") {
+    return ok("This release is not live on the site.");
+  }
+  if (!unpublish && !existing.release_date) {
+    return fail(
+      "A release cannot go live without a date. Set the release date in the details below, save, then publish.",
+      "release_date",
+    );
+  }
+
+  const next: ReleaseStatus = unpublish ? "draft" : "released";
+  const { data, error } = await sb
+    .from("releases")
+    .update({ status: next })
+    .eq("id", id)
+    .select("slug,status")
+    .single();
+  if (error) return databaseFail(error);
+
+  await audit(session, unpublish ? "release.unpublished" : "release.published", "releases", String(data.slug), {
+    from: status,
+    to: next,
+  });
+
+  revalidateRelease(String(data.slug));
+  return ok(
+    unpublish
+      ? `${currentSlug} is back to draft and no longer appears on the public site.`
+      : `${currentSlug} is live — it now appears on the Music page, the homepage and the sitemap.`,
+  );
+}
+
 export async function updateReleaseSeoAction(
   _prev: AdminFormState,
   fd: FormData,

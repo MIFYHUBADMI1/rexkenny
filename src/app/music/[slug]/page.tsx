@@ -13,6 +13,7 @@ import { SITE } from "@/lib/site";
 import { DemoNotice } from "@/components/ui/DemoNotice";
 import { Player } from "@/components/music/Player";
 import { FavouriteButton } from "@/components/music/FavouriteButton";
+import { ShareButton } from "@/components/music/ShareButton";
 import { sessionOrNull } from "@/lib/auth/session";
 import { createSupabaseServerClient } from "@/lib/supabase/server";
 
@@ -107,6 +108,29 @@ export default async function ReleasePage({ params }: { params: Promise<{ slug: 
                 durationSeconds: t.durationSeconds,
               }))}
             />
+            {r.tracks.some((t) => t.previewUrl) && (
+              <div className="mt-3">
+                <p className="text-xs uppercase tracking-[0.16em] text-smoke">
+                  Download
+                </p>
+                <ul className="mt-2 space-y-1.5">
+                  {r.tracks
+                    .filter((t) => t.previewUrl)
+                    .map((t) => (
+                      <li key={t.id}>
+                        <a
+                          href={t.previewUrl ?? "#"}
+                          download
+                          className="inline-flex items-center gap-1.5 text-sm text-mist underline-offset-4 hover:text-gold hover:underline"
+                        >
+                          {t.title}
+                          <span className="text-xs text-smoke">audio file</span>
+                        </a>
+                      </li>
+                    ))}
+                </ul>
+              </div>
+            )}
           </div>
 
           <article>
@@ -147,13 +171,14 @@ export default async function ReleasePage({ params }: { params: Promise<{ slug: 
               ))}
             </dl>
 
-            <div className="mt-6">
+            <div className="mt-6 flex flex-wrap items-center gap-3">
               <FavouriteButton
                 releaseId={r.id}
                 releaseSlug={r.slug}
                 initialSaved={saved}
                 signedIn={Boolean(session)}
               />
+              <ShareButton path={`/music/${r.slug}`} title={r.title} />
             </div>
 
             {r.description && (

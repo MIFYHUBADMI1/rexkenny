@@ -23,7 +23,8 @@ import {
 } from "@/components/admin/ReleasePanels";
 import { OfflineNotice } from "@/components/admin/OfflineNotice";
 import { Panel, StatusChip } from "@/components/admin/ui";
-import { updateReleaseAction, changeReleaseStatusAction } from "@/actions/releases";
+import { isAiConfigured } from "@/lib/config";
+import { updateReleaseAction, changeReleaseStatusAction, publishReleaseAction } from "@/actions/releases";
 import { EDITABLE_STATUSES, STATUS_LABEL, evaluateReadiness } from "@/lib/admin/readiness";
 import { AdminForm } from "@/components/admin/AdminForm";
 import { Select, Field, FormNote } from "@/components/admin/ui";
@@ -155,12 +156,39 @@ export default async function ReleaseDetailPage({
             the details below first.
           </p>
         </AdminForm>
+
+        {release.status !== "submitted" && release.status !== "processing" ? (
+          <div className="mt-6 border-t border-charcoal pt-5">
+            <AdminForm
+              action={publishReleaseAction}
+              submitLabel={
+                release.status === "released"
+                  ? "Remove from the public site"
+                  : "Publish on this site"
+              }
+              resetKey={`publish-${release.id}`}
+              footnote="Fans see it on the Music page, the homepage and in the sitemap as soon as this saves."
+            >
+              <input type="hidden" name="id" value={release.id} />
+              <input type="hidden" name="current_slug" value={release.slug} />
+              {release.status === "released" ? (
+                <input type="hidden" name="unpublish" value="on" />
+              ) : null}
+              <p className="text-xs leading-relaxed text-smoke">
+                {release.status === "released"
+                  ? "This record is live on the public site. Removing it sends it back to draft — the page, player, downloads and share links all disappear."
+                  : "For music released on this site itself (uploads, exclusives), publishing here is what puts it in front of fans — no distributor involved. It needs a release date first."}
+              </p>
+            </AdminForm>
+          </div>
+        ) : null}
       </Panel>
 
       <ReleaseForm
         release={release}
         action={updateReleaseAction}
         genres={genres.ok ? genres.data : []}
+        aiEnabled={isAiConfigured}
       />
 
       {genres.ok ? null : (
@@ -192,7 +220,7 @@ export default async function ReleaseDetailPage({
         }
       />
 
-      <SearchAppearancePanel release={release} />
+      <SearchAppearancePanel release={release} aiEnabled={isAiConfigured} />
 
       <ExportPanel release={release} history={exports.ok ? exports.data : []} />
 

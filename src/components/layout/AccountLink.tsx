@@ -1,28 +1,18 @@
 "use client";
 
-import { useEffect, useState } from "react";
 import Link from "next/link";
-import { createSupabaseBrowserClient } from "@/lib/supabase/browser";
+import { usePathname } from "next/navigation";
 import { signOutAction } from "@/actions/auth";
-import { STAFF_ROLES, isRole } from "@/lib/auth/roles";
-
-type AccountState = "loading" | "out" | "staff" | "fan";
-
-function rolesFromClaims(user: { app_metadata?: Record<string, unknown> } | null) {
-  const roles = user?.app_metadata?.roles;
-  return Array.isArray(roles) ? roles.filter(isRole) : [];
-}
-
-function isStaffRoles(roles: ReturnType<typeof rolesFromClaims>): boolean {
-  // Every account carries 'fan'; staff means one of the dashboard roles.
-  return roles.some((r) => (STAFF_ROLES as string[]).includes(r));
-}
+import { hasStaffRole, useAccountSession } from "@/lib/auth/useAccountSession";
 
 /**
  * Session-aware header link. Reads the auth cookie client-side so the rest of
  * the site can stay static — no cookies() in the layout, no forced dynamic
  * rendering. Renders nothing until the session is known to avoid flashing the
  * wrong state at signed-in users.
+ *
+ * Inside /admin the controls flip to "View site" + "Sign out": staff are
+ * already on the dashboard, so a "Dashboard" link would loop back to itself.
  */
 export function AccountLink({
   variant,
@@ -31,45 +21,55 @@ export function AccountLink({
   variant: "desktop" | "mobile";
   onNavigate?: () => void;
 }) {
-  const [state, setState] = useState<AccountState>("loading");
+  const account = useAccountSession();
+  const pathname = usePathname();
+  const inAdmin = pathname.startsWith("/admin");
 
-  useEffect(() => {
-    const sb = createSupabaseBrowserClient();
-    if (!sb) {
-      setState("out");
-      return;
+  if (!account) return null;
+
+  const { signedIn, roles } = account;
+  const staff = hasStaffRole(roles);
+
+  // Inside the dashboard: offer the way back to the public site and sign-out.
+  if (inAdmin && signedIn) {
+    if (variant === "desktop") {
+      return (
+        <span className="hidden items-center gap-2 md:flex">
+          <Link
+            href="/"
+            className="inline-flex h-10 items-center rounded-full border border-ash px-4 text-sm font-semibold text-mist transition-colors hover:border-gold hover:text-gold"
+          >
+            View site
+          </Link>
+          <form action={signOutAction}>
+            <button
+              type="submit"
+              className="inline-flex h-10 items-center rounded-full border border-ash px-4 text-sm font-semibold text-mist transition-colors hover:border-gold hover:text-gold"
+            >
+              Sign out
+            </button>
+          </form>
+        </span>
+      );
     }
-    let cancelled = false;
-    sb.auth.getSession().then(async ({ data }) => {
-      if (cancelled) return;
-      const user = data.session?.user ?? null;
-      if (!user) {
-        setState("out");
-        return;
-      }
-      let roles = rolesFromClaims(user);
-      if (roles.length === 0) {
-        // JWT claims not refreshed yet — user_roles is readable by its owner.
-        const { data: rows } = await sb
-          .from("user_roles")
-          .select("role")
-          .eq("user_id", user.id);
-        roles = (rows ?? []).map((r) => r.role).filter(isRole);
-      }
-      if (cancelled) return;
-      setState(isStaffRoles(roles) ? "staff" : "fan");
-    });
-    return () => {
-      cancelled = true;
-    };
-  }, []);
-
-  if (state === "loading") return null;
+    return (
+      <li className="flex gap-3 py-4">
+        <Link href="/" onClick={onNavigate} className="btn-ghost flex-1 text-center">
+          View site
+        </Link>
+        <form action={signOutAction} className="flex-1">
+          <button type="submit" className="btn-ghost w-full text-center">
+            Sign out
+          </button>
+        </form>
+      </li>
+    );
+  }
 
   if (variant === "desktop") {
     const className =
       "hidden h-10 items-center rounded-full border px-4 text-sm font-semibold transition-colors md:inline-flex";
-    if (state === "staff") {
+    if (staff) {
       return (
         <Link
           href="/admin"
@@ -82,17 +82,17 @@ export function AccountLink({
     }
     return (
       <Link
-        href={state === "fan" ? "/account" : "/auth/login"}
+        href={signedIn ? "/account" : "/auth/login"}
         onClick={onNavigate}
         className={`${className} border-ash text-mist hover:border-gold hover:text-gold`}
       >
-        {state === "fan" ? "Account" : "Sign in"}
+        {signedIn ? "Account" : "Sign in"}
       </Link>
     );
   }
 
   // Mobile menu item — renders its own <li> so it can replace the auth row.
-  if (state === "staff") {
+  if (staff) {
     return (
       <li className="py-4">
         <Link href="/admin" onClick={onNavigate} className="btn-gold w-full">
@@ -101,7 +101,7 @@ export function AccountLink({
       </li>
     );
   }
-  if (state === "fan") {
+  if (signedIn) {
     return (
       <li className="flex gap-3 py-4">
         <Link href="/account" onClick={onNavigate} className="btn-ghost flex-1 text-center">

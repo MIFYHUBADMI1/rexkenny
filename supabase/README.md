@@ -1,6 +1,6 @@
 # Supabase migrations
 
-Ten ordered files. `0001` defines the helper functions every later file uses, so
+Twelve ordered files. `0001` defines the helper functions every later file uses, so
 they must be applied in filename order.
 
 | File | Creates |
@@ -15,6 +15,8 @@ they must be applied in filename order.
 | `0008_system_and_email.sql` | `audit_logs`, `notifications`, `email_campaigns`, `email_delivery_logs`, `integration_connections`, `queue_email_campaign()` |
 | `0009_storage.sql` | seven buckets and their read/upload/delete rules |
 | `0010_seed_and_bootstrap.sql` | the artist row, genres, categories, distributor list, integration checklist, `bootstrap_super_admin()` |
+| `0011_music_upload.sql` | the public `site-videos` bucket for admin video uploads |
+| `0012_ai_assistant.sql` | `ai_chat_messages` — per-account assistant memory, staff-only RLS |
 
 ## Applying them
 

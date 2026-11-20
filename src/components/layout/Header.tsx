@@ -6,11 +6,18 @@ import { usePathname } from "next/navigation";
 import { Menu, X, Search } from "lucide-react";
 import { NAV, SITE } from "@/lib/site";
 import { AccountLink } from "@/components/layout/AccountLink";
+import { NavItem } from "@/components/admin/AdminSidebar";
+import { visibleModules } from "@/lib/admin/modules";
+import { useAccountSession } from "@/lib/auth/useAccountSession";
 
 export function Header() {
   const [open, setOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
   const pathname = usePathname();
+  const account = useAccountSession();
+  const inAdmin = pathname.startsWith("/admin");
+  const adminModules =
+    inAdmin && account?.signedIn ? visibleModules(account.roles) : [];
 
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 8);
@@ -39,13 +46,15 @@ export function Header() {
     >
       <div className="container-page flex h-16 items-center justify-between gap-4 md:h-20">
         <Link
-          href="/"
+          href={inAdmin ? "/admin" : "/"}
           className="shrink-0 font-[family-name:var(--font-display)] text-lg font-black tracking-[0.18em] text-paper md:text-xl"
-          aria-label={`${SITE.shortName} — home`}
+          aria-label={
+            inAdmin ? `${SITE.shortName} — dashboard` : `${SITE.shortName} — home`
+          }
         >
           REX KENNY
           <span className="ml-1.5 hidden text-[0.6rem] font-semibold tracking-[0.3em] text-gold sm:inline">
-            MUSIC
+            {inAdmin ? "HQ" : "MUSIC"}
           </span>
         </Link>
 
@@ -98,8 +107,23 @@ export function Header() {
         <nav
           id="mobile-nav"
           aria-label="Mobile"
-          className="border-t border-ash bg-ink lg:hidden"
+          className="max-h-[calc(100dvh-4rem)] overflow-y-auto border-t border-ash bg-ink lg:hidden"
         >
+          {adminModules.length > 0 && (
+            <div className="border-b border-ash">
+              <p className="eyebrow container-page pb-1 pt-4">Workspace</p>
+              <ul className="container-page pb-4">
+                {adminModules.map((m) => (
+                  <NavItem
+                    key={m.href}
+                    module={m}
+                    active={pathname === m.href}
+                  />
+                ))}
+              </ul>
+            </div>
+          )}
+
           <ul className="container-page flex flex-col py-2">
             {NAV.map((item) => (
               <li key={item.href} className="border-b border-charcoal last:border-0">

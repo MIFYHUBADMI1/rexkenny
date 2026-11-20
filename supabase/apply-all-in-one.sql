@@ -2968,3 +2968,97 @@ grant select on public.releases, public.tracks, public.music_videos, public.beat
 
 
 
+
+-- 0011_music_upload.sql
+
+-- 0011 — Public video bucket for admin music uploads.
+--
+-- 0009 deliberately ships no video bucket: music_videos only ever pointed at
+-- YouTube embeds or external hosts. The "Add music" admin screen lets an editor
+-- upload the official video file itself, so this adds one public bucket that
+-- holds nothing but web-playable video. Song masters stay in music-private and
+-- cover art stays in artist-public; nothing here changes those rules.
+--
+-- Note: the per-file ceiling below is the bucket's own limit. The Supabase
+-- project's plan may cap uploads lower (the free tier stops at 50 MB), in which
+-- case the storage API refuses the file and the admin sees that error.
+
+insert into storage.buckets (id, name, public, file_size_limit, allowed_mime_types)
+values
+  ('site-videos', 'site-videos', true, 2147483648,
+   array['video/mp4','video/webm'])
+on conflict (id) do update
+  set public = excluded.public,
+      file_size_limit = excluded.file_size_limit,
+      allowed_mime_types = excluded.allowed_mime_types;
+
+-- ---------------------------------------------------------------------------
+-- Read rules — same shape as the other public buckets: anyone may load a file,
+-- and the bucket only ever holds files under uploads/ written by staff.
+-- ---------------------------------------------------------------------------
+create policy "site-videos: world reads"
+  on storage.objects for select
+  to anon, authenticated
+  using (bucket_id = 'site-videos');
+
+-- ---------------------------------------------------------------------------
+-- Write rules — content staff upload, only into uploads/. Deletes reuse the
+-- generic "staff delete own uploads" / "admins delete any upload" policies
+-- from 0009, which are not bucket-scoped.
+-- ---------------------------------------------------------------------------
+create policy "site-videos: editors upload videos"
+  on storage.objects for insert
+  to authenticated
+  with check (
+    bucket_id = 'site-videos'
+    and public.can_edit_content()
+    and split_part(name, '/', 1) = 'uploads'
+  );
+
+
+-- 0012_ai_assistant.sql
+
+-- 0012 — AI assistant: persistent chat memory for staff.
+--
+-- The /admin/assistant page lets staff ask about the catalogue and get
+-- onboarding help. This table is the "memory": every question and answer is
+-- kept per account so the conversation survives sign-out and device changes.
+-- Rows are private to their owner — a staff member never reads a colleague's
+-- thread, and fans have no access at all (is_staff() gate on every policy).
+--
+-- If this migration is not applied the assistant still answers; the chat UI
+-- reports memory as "session only" instead of pretending it remembers.
+
+create table public.ai_chat_messages (
+  id          uuid primary key default gen_random_uuid(),
+  user_id     uuid not null references auth.users (id) on delete cascade,
+  role        text not null check (role in ('user','assistant')),
+  content     text not null check (char_length(content) between 1 and 8000),
+  created_at  timestamptz not null default now()
+);
+
+create index ai_chat_messages_user_idx
+  on public.ai_chat_messages (user_id, created_at);
+
+-- ---------------------------------------------------------------------------
+-- RLS — owner-scoped. The assistant writes through the signed-in user's own
+-- token (createSupabaseServerClient), so these policies are the enforcement:
+-- you can only ever read, add or delete your own messages, and only while your
+-- account still carries a staff role.
+-- ---------------------------------------------------------------------------
+alter table public.ai_chat_messages enable row level security;
+
+create policy "ai chat: staff read own"
+  on public.ai_chat_messages for select
+  to authenticated
+  using (user_id = public.auth_uid() and public.is_staff());
+
+create policy "ai chat: staff insert own"
+  on public.ai_chat_messages for insert
+  to authenticated
+  with check (user_id = public.auth_uid() and public.is_staff());
+
+create policy "ai chat: staff delete own"
+  on public.ai_chat_messages for delete
+  to authenticated
+  using (user_id = public.auth_uid() and public.is_staff());
