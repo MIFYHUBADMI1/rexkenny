@@ -303,8 +303,15 @@ create policy "campaigns: staff read"
   to authenticated
   using (public.is_staff());
 
-create policy "campaigns: marketing writes drafts"
-  on public.email_campaigns for insert, update
+create policy "campaigns: marketing inserts drafts"
+  on public.email_campaigns for insert
+  to authenticated
+  with check (
+    public.has_role('marketing_manager') or public.can_edit_content()
+  );
+
+create policy "campaigns: marketing updates drafts"
+  on public.email_campaigns for update
   to authenticated
   using (public.has_role('marketing_manager') or public.can_edit_content())
   with check (

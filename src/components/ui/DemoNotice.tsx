@@ -1,3 +1,4 @@
+import Link from "next/link";
 import { Play, Disc3 } from "lucide-react";
 
 /**

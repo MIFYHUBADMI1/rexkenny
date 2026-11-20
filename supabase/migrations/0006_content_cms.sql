@@ -119,8 +119,13 @@ create policy "posts: staff read all"
   to authenticated
   using (public.is_staff());
 
-create policy "posts: editors write"
-  on public.blog_posts for insert, update
+create policy "posts: editors insert"
+  on public.blog_posts for insert
+  to authenticated
+  with check (public.can_edit_content());
+
+create policy "posts: editors update"
+  on public.blog_posts for update
   to authenticated
   using (public.can_edit_content())
   with check (public.can_edit_content());
@@ -140,8 +145,13 @@ create policy "pages: staff read all"
   to authenticated
   using (public.is_staff());
 
-create policy "pages: editors write"
-  on public.pages for insert, update
+create policy "pages: editors insert"
+  on public.pages for insert
+  to authenticated
+  with check (public.can_edit_content());
+
+create policy "pages: editors update"
+  on public.pages for update
   to authenticated
   using (public.can_edit_content())
   with check (public.can_edit_content());

@@ -53,17 +53,17 @@ stable
 as $$
   select coalesce(
     (
-      select array_agg(r)
-      from unnest(
+      select array_agg(role_value)
+      from jsonb_array_elements_text(
         coalesce(
-          nullif(current_setting('request.jwt.claims', true), '')::json -> 'app_metadata' -> 'roles',
-          '[]'::json
-        )::text[]
-      ) as r
+          nullif(current_setting('request.jwt.claims', true), '')::jsonb
+            -> 'app_metadata' -> 'roles',
+          '[]'::jsonb
+        )
+      ) as role_value
     ),
     '{}'::text[]
   );
-end;
 $$;
 
 create or replace function public.auth_uid()

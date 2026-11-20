@@ -428,8 +428,13 @@ create policy "releases: staff read all"
   to authenticated
   using (public.is_staff());
 
-create policy "releases: editors write"
-  on public.releases for insert, update
+create policy "releases: editors insert"
+  on public.releases for insert
+  to authenticated
+  with check (public.can_edit_content());
+
+create policy "releases: editors update"
+  on public.releases for update
   to authenticated
   using (public.can_edit_content())
   with check (public.can_edit_content());
@@ -446,8 +451,13 @@ create policy "tracks: public read from released releases"
   to anon, authenticated
   using (public.release_is_public(release_id) or public.is_staff());
 
-create policy "tracks: editors write"
-  on public.tracks for insert, update
+create policy "tracks: editors insert"
+  on public.tracks for insert
+  to authenticated
+  with check (public.can_edit_content() and public.release_is_editable(release_id));
+
+create policy "tracks: editors update"
+  on public.tracks for update
   to authenticated
   using (public.can_edit_content())
   with check (public.can_edit_content() and public.release_is_editable(release_id));
@@ -498,8 +508,13 @@ create policy "videos: staff read all"
   to authenticated
   using (public.is_staff());
 
-create policy "videos: editors write"
-  on public.music_videos for insert, update
+create policy "videos: editors insert"
+  on public.music_videos for insert
+  to authenticated
+  with check (public.can_edit_content());
+
+create policy "videos: editors update"
+  on public.music_videos for update
   to authenticated
   using (public.can_edit_content())
   with check (public.can_edit_content());
@@ -519,8 +534,13 @@ create policy "beats: staff read all"
   to authenticated
   using (public.is_staff());
 
-create policy "beats: editors write"
-  on public.beats for insert, update
+create policy "beats: editors insert"
+  on public.beats for insert
+  to authenticated
+  with check (public.can_edit_content());
+
+create policy "beats: editors update"
+  on public.beats for update
   to authenticated
   using (public.can_edit_content())
   with check (public.can_edit_content());

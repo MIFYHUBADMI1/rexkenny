@@ -186,11 +186,16 @@ create policy "events: staff read"
   to authenticated
   using (public.is_staff());
 
-create policy "events: staff maintain"
-  on public.analytics_events for update, delete
+create policy "events: admins update"
+  on public.analytics_events for update
   to authenticated
   using (public.is_admin())
   with check (public.is_admin());
+
+create policy "events: admins delete"
+  on public.analytics_events for delete
+  to authenticated
+  using (public.is_admin());
 
 create policy "page views: staff read"
   on public.page_views for select
@@ -219,8 +224,13 @@ create policy "release analytics: staff read"
   to authenticated
   using (public.is_staff());
 
-create policy "release analytics: pipeline write"
-  on public.release_analytics for insert, update
+create policy "release analytics: pipeline insert"
+  on public.release_analytics for insert
+  to authenticated
+  with check (public.has_role('analytics_viewer') or public.can_edit_content());
+
+create policy "release analytics: pipeline update"
+  on public.release_analytics for update
   to authenticated
   using (public.has_role('analytics_viewer') or public.can_edit_content())
   with check (public.has_role('analytics_viewer') or public.can_edit_content());
@@ -242,8 +252,13 @@ create policy "trends: staff read"
   to authenticated
   using (public.is_staff());
 
-create policy "trends: staff write"
-  on public.trend_snapshots for insert, update
+create policy "trends: staff insert"
+  on public.trend_snapshots for insert
+  to authenticated
+  with check (public.can_edit_content());
+
+create policy "trends: staff update"
+  on public.trend_snapshots for update
   to authenticated
   using (public.can_edit_content())
   with check (public.can_edit_content());
