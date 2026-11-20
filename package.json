@@ -17,7 +17,7 @@
     "verify": "npm run typecheck && npm run lint && npm run lint:sql && npm run check:schema && npm run check:links && npm run check:assets && npm run build"
   },
   "dependencies": {
-    "@supabase/ssr": "^0.5.2",
+    "@supabase/ssr": "^0.12.7",
     "@supabase/supabase-js": "^2.45.4",
     "@types/sanitize-html": "^2.16.2",
     "lucide-react": "^0.454.0",
