@@ -12,6 +12,9 @@ import { buildGraph, releaseNode, musicGroupNode, breadcrumbNode } from "@/lib/s
 import { SITE } from "@/lib/site";
 import { DemoNotice } from "@/components/ui/DemoNotice";
 import { Player } from "@/components/music/Player";
+import { FavouriteButton } from "@/components/music/FavouriteButton";
+import { sessionOrNull } from "@/lib/auth/session";
+import { createSupabaseServerClient } from "@/lib/supabase/server";
 
 export const dynamic = "force-dynamic";
 
@@ -49,6 +52,21 @@ export default async function ReleasePage({ params }: { params: Promise<{ slug: 
 
   if (!release) notFound();
   const r = release;
+
+  const session = await sessionOrNull();
+  let saved = false;
+  if (session) {
+    const sb = await createSupabaseServerClient();
+    if (sb) {
+      const { data } = await sb
+        .from("fan_favourites")
+        .select("release_id")
+        .eq("user_id", session.userId)
+        .eq("release_id", r.id)
+        .maybeSingle();
+      saved = Boolean(data);
+    }
+  }
 
   const related = all.filter((x) => x.slug !== r.slug).slice(0, 4);
 
@@ -128,6 +146,15 @@ export default async function ReleasePage({ params }: { params: Promise<{ slug: 
                 </div>
               ))}
             </dl>
+
+            <div className="mt-6">
+              <FavouriteButton
+                releaseId={r.id}
+                releaseSlug={r.slug}
+                initialSaved={saved}
+                signedIn={Boolean(session)}
+              />
+            </div>
 
             {r.description && (
               <p className="mt-7 leading-relaxed text-mist">{r.description}</p>

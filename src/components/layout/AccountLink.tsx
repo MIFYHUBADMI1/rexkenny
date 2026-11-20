@@ -82,7 +82,7 @@ export function AccountLink({
     }
     return (
       <Link
-        href="/auth/login"
+        href={state === "fan" ? "/account" : "/auth/login"}
         onClick={onNavigate}
         className={`${className} border-ash text-mist hover:border-gold hover:text-gold`}
       >
@@ -104,7 +104,7 @@ export function AccountLink({
   if (state === "fan") {
     return (
       <li className="flex gap-3 py-4">
-        <Link href="/auth/login" onClick={onNavigate} className="btn-ghost flex-1 text-center">
+        <Link href="/account" onClick={onNavigate} className="btn-ghost flex-1 text-center">
           Account
         </Link>
         <form action={signOutAction} className="flex-1">
