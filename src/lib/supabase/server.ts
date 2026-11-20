@@ -35,7 +35,6 @@ export async function createSupabaseServerClient() {
   return createServerClient(env.supabaseUrl, env.supabaseAnonKey, {
     cookies: {
       getAll: () => cookieStore.getAll(),
-      get: (name: string) => cookieStore.get(name)?.value,
       setAll: (
         list: { name: string; value: string; options: Record<string, unknown> }[],
       ) => {
@@ -46,18 +45,6 @@ export async function createSupabaseServerClient() {
           );
         } catch {
           // Called from a Server Component: safe to ignore, the layout refreshes session.
-        }
-      },
-      serialize: (
-        name: string,
-        value: string,
-        options: Record<string, unknown>,
-      ) => {
-        try {
-          // eslint-disable-next-line @typescript-eslint/no-explicit-any
-          return cookieStore.set(name, value, options as any);
-        } catch {
-          return undefined;
         }
       },
     },
