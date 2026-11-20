@@ -23,9 +23,9 @@ export function SubscribeCall() {
                 <p className="font-semibold text-gold">Email signup is offline</p>
                 <p className="mt-2 leading-relaxed text-smoke">
                   Subscriptions are not being collected because no email provider is
-                  configured. Add <code>RESEND_API_KEY</code> and point the domain’s
-                  SPF / DKIM / DMARC records at Resend to switch this on. Signups are
-                  never stored in a way that pretends to work.
+                  configured. Set the <code>SMTP_*</code> variables (Gmail App
+                  Password) to switch this on. Signups are never stored in a way
+                  that pretends to work.
                 </p>
               </div>
             )}

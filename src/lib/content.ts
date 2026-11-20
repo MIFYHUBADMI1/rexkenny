@@ -1,5 +1,5 @@
 import { cache } from "react";
-import { createSupabaseServerClient } from "@/lib/supabase/server";
+import { createSupabasePublicClient } from "@/lib/supabase/server";
 import {
   demoArtist,
   demoBeats,
@@ -20,7 +20,7 @@ export type WithSource<T> = { data: T; source: Source };
 
 /** Shape returned to pages so the UI can label demo content honestly. */
 export async function getReleases(): Promise<WithSource<Release[]>> {
-  const sb = await createSupabaseServerClient();
+  const sb = createSupabasePublicClient();
   if (!sb) return { data: demoReleases, source: "demo" };
   const { data, error } = await sb
     .from("releases")
@@ -34,7 +34,7 @@ export async function getReleases(): Promise<WithSource<Release[]>> {
 export async function getReleaseBySlug(
   slug: string,
 ): Promise<WithSource<Release | null>> {
-  const sb = await createSupabaseServerClient();
+  const sb = createSupabasePublicClient();
   if (!sb) {
     const hit = demoReleases.find((r) => r.slug === slug) ?? null;
     return { data: hit, source: "demo" };
@@ -49,7 +49,7 @@ export async function getReleaseBySlug(
 }
 
 export async function getArtistProfile(): Promise<WithSource<ArtistProfileData>> {
-  const sb = await createSupabaseServerClient();
+  const sb = createSupabasePublicClient();
   if (!sb) return { data: demoArtist, source: "demo" };
   const { data, error } = await sb
     .from("artist_profiles")
@@ -61,7 +61,7 @@ export async function getArtistProfile(): Promise<WithSource<ArtistProfileData>>
 }
 
 export async function getVideos(): Promise<WithSource<MusicVideo[]>> {
-  const sb = await createSupabaseServerClient();
+  const sb = createSupabasePublicClient();
   if (!sb) return { data: demoVideos, source: "demo" };
   const { data, error } = await sb
     .from("music_videos")
@@ -73,7 +73,7 @@ export async function getVideos(): Promise<WithSource<MusicVideo[]>> {
 }
 
 export async function getPosts(): Promise<WithSource<BlogPost[]>> {
-  const sb = await createSupabaseServerClient();
+  const sb = createSupabasePublicClient();
   if (!sb) return { data: demoPosts, source: "demo" };
   const { data, error } = await sb
     .from("blog_posts")
@@ -160,7 +160,7 @@ export const getLyricBySlug = cache(async (slug: string): Promise<LyricEntry | n
 });
 
 export async function getBeats(): Promise<WithSource<Beat[]>> {
-  const sb = await createSupabaseServerClient();
+  const sb = createSupabasePublicClient();
   if (!sb) return { data: demoBeats, source: "demo" };
   const { data, error } = await sb
     .from("beats")

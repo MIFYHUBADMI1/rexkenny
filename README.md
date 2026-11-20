@@ -53,7 +53,7 @@ authorisation is enforced.
 | `NEXT_PUBLIC_SUPABASE_URL` / `_ANON_KEY` | Public data reads, browser auth | Demo content, clearly labelled |
 | `SUPABASE_SERVICE_ROLE_KEY` | Server-only admin writes | Admin writes refuse to run |
 | `IP_SALT` | Salt for the contact-form throttle hash | A fixed default is used; change it to reset all windows |
-| `RESEND_API_KEY` | Email | Every subscribe/campaign surface says it is not connected |
+| `SMTP_HOST` / `SMTP_PORT` / `SMTP_USER` / `SMTP_PASS` + `EMAIL_FROM` | Email (SMTP, e.g. Gmail App Password) | The subscribe form says the provider is not connected |
 | `NEXT_PUBLIC_GA4_MEASUREMENT_ID` | Analytics | No script is loaded, no traffic is reported |
 | `NEXT_PUBLIC_GSC_SITE_VERIFICATION` | Search Console proof in `<head>` | No verification tag |
 | `AI_API_KEY` | Optional admin assistant | The feature is not offered |
@@ -185,9 +185,9 @@ These are constraints, not gaps:
   (`master_stays_private`); public audio readable only under `previews/`.
 - No password storage of any kind beyond Supabase Auth, and no service-role key
   outside a module that begins with `import "server-only"`.
-- No email sending without a verified sending domain, and no subscriber storage
-  without double opt-in. Nothing here sends unsolicited mail: no Resend client is
-  wired yet, and every subscribe surface says the service is not connected.
+- No email sending without SMTP credentials (`SMTP_*` + `EMAIL_FROM`), and no
+  subscriber storage without double opt-in: the confirmation link is single-use
+  and only its SHA-256 hash is stored. Nothing here sends unsolicited mail.
 - No scraping of restricted services and no automatic publishing to social
   platforms without authorised API permissions. `SOCIALS` entries stay empty
   until a real profile exists — empty links are never rendered and never enter

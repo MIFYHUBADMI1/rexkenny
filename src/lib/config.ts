@@ -14,7 +14,11 @@ export const env = {
   supabaseUrl: truthy(process.env.NEXT_PUBLIC_SUPABASE_URL),
   supabaseAnonKey: truthy(process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY),
   serviceRoleKey: truthy(process.env.SUPABASE_SERVICE_ROLE_KEY),
-  resendApiKey: truthy(process.env.RESEND_API_KEY),
+  smtpHost: truthy(process.env.SMTP_HOST),
+  smtpPort: Number(process.env.SMTP_PORT) > 0 ? Number(process.env.SMTP_PORT) : 465,
+  smtpUser: truthy(process.env.SMTP_USER),
+  smtpPass: truthy(process.env.SMTP_PASS),
+  emailFrom: truthy(process.env.EMAIL_FROM),
   ga4Id: truthy(process.env.NEXT_PUBLIC_GA4_MEASUREMENT_ID),
   aiApiKey: truthy(process.env.AI_API_KEY),
 } as const;
@@ -36,7 +40,9 @@ export const isSupabaseAdminConfigured = Boolean(
   env.supabaseUrl && env.serviceRoleKey,
 );
 
-export const isEmailConfigured = Boolean(env.resendApiKey);
+export const isEmailConfigured = Boolean(
+  env.smtpHost && env.smtpUser && env.smtpPass && env.emailFrom,
+);
 export const isAnalyticsConfigured = Boolean(env.ga4Id);
 export const isAiConfigured = Boolean(env.aiApiKey);
 
@@ -64,9 +70,10 @@ export function integrationStates(): IntegrationState[] {
     },
     {
       key: "email",
-      label: "Resend transactional email",
+      label: "SMTP email (e.g. Gmail)",
       configured: isEmailConfigured,
-      action: "Set RESEND_API_KEY and verify your sending domain (SPF/DKIM/DMARC).",
+      action:
+        "Set SMTP_HOST, SMTP_PORT, SMTP_USER, SMTP_PASS and EMAIL_FROM. For Gmail use an App Password.",
     },
     {
       key: "analytics",
